@@ -21,4 +21,4 @@ import jwt, { JwtPayload, Secret, SignOptions } from "jsonwebtoken"
 
 }
 
-export default   TokenService
+export default  TokenService

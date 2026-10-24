@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import type { Types } from "mongoose";
+import { Types } from "mongoose";
 import { GenderEnum, RoleEnum } from "../../common/enums/user.enum";
 import { Hash } from "../../common/security/hash";
 import { generate_otp, sendEmail } from "../../common/service/send_email.service";
@@ -24,6 +24,8 @@ export interface IUser {
   isDeleted?:boolean;
   createdAt: Date;
   updatedAt: Date;
+     friends?:Types.ObjectId[];
+
 }
  
 const userSchema = new mongoose.Schema<IUser>(
@@ -47,6 +49,7 @@ const userSchema = new mongoose.Schema<IUser>(
       enum: RoleEnum,
       default: RoleEnum.user,
     },
+    friends: {type : Types.ObjectId},
   },
   {
     timestamps: true,
@@ -92,22 +95,22 @@ const userSchema = new mongoose.Schema<IUser>(
 // })
 
 
-userSchema.pre("findOne", function () {
-      console.log("===============  pre updateOne =====================");
-     const query =this.getQuery()
-     const {paranoid , ...rest}= query
-     if(paranoid == true){
-        this.setQuery({...rest})
-     }else{
-        this.setQuery({paranoid , isDeleted :{$exists : false}})
-     }
-});
+// userSchema.pre("findOne", function () {
+//       console.log("===============  pre updateOne =====================");
+//      const query =this.getQuery()
+//      const {paranoid , ...rest}= query
+//      if(paranoid == true){
+//         this.setQuery({...rest})
+//      }else{
+//         this.setQuery({paranoid , isDeleted :{$exists : false}})
+//      }
+// });
 
-userSchema.post(/^find/,{ document: true, query: false },async function(){
-    console.log("=============== post updateOne =====================");
-    console.log(this);
+// userSchema.post(/^find/,{ document: true, query: false },async function(){
+//     console.log("=============== post updateOne =====================");
+//     console.log(this);
   
-})
+// })
 
 
 

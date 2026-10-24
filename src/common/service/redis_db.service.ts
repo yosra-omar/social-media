@@ -1,5 +1,6 @@
 import  { createClient, RedisClientType } from "redis"
 import { REDIS_URL } from "../../config/config.service"
+import { Types } from "mongoose";
  
 type SetType ={
         key:string,
@@ -159,7 +160,31 @@ class RedisService {
               return 0;
       }
     }
- 
+
+     key(userId:Types.ObjectId) {
+    return `user:FCM:${userId}`;
+    }
+      async addFCM({userId, FCMToken}:{userId : Types.ObjectId, FCMToken :string}) {
+        return await  this.redis_client.sAdd(this.key(userId), FCMToken);
+    }
+
+      async removeFCM({userId, FCMToken}:{userId : Types.ObjectId, FCMToken :string}) {
+        return await  this.redis_client.sRem(this.key(userId), FCMToken);
+    }
+
+      async getFCMs(userId:Types.ObjectId) {
+        return await  this.redis_client.sMembers(this.key(userId));
+    }
+
+      async hasFCMs(userId:Types.ObjectId) {
+        return await  this.redis_client.sCard(this.key(userId));
+    }
+
+      async removeFCMUser(userId:Types.ObjectId) {
+        return await  this.redis_client.del(this.key(userId));
+    }
+
+
 }
 
-export default RedisService
+export default new RedisService()
